@@ -1,0 +1,101 @@
+mql5
+//+------------------------------------------------------------------+
+//|                                          AI for Gold            |
+//|                           Developer's site: forexroboteasy.com   |
+//|                           Development by: Forex Robot Easy Team  |
+//+------------------------------------------------------------------+
+
+//+------------------------------------------------------------------+
+//|                                                                  |
+//|  Terms of Reference for Writing Code for Product AI for Gold:    |
+//|                                                                  |
+//|  1. Develop a robust and adaptable Expert Advisor (EA) for the    |
+//|     'AI for Gold' software.                                       |
+//|  2. Utilize Price Action patterns and AI techniques to forecast   |
+//|     the outcomes of incoming trades.                              |
+//|  3. Ensure that the EA provides reliable trade predictions without|
+//|     the need for constant relearning or fear of disintegration.   |
+//|  4. Conduct rigorous comparison tests with other Gold Trading EAs |
+//|     on the MQL market to confirm superiority.                     |
+//|  5. Implement necessary trading functions to enable efficient     |
+//|     Gold trading.                                                 |
+//|  6. The technical specification should only include essential     |
+//|     trading functions required for the algorithm.                 |
+//|  7. The size of the terms of reference should not exceed          |
+//|     1500-2000 characters.                                         |
+//|                                                                  |
+//+------------------------------------------------------------------+
+
+// Include necessary libraries
+#include <Trade\Trade.mqh>
+#include <Pattern\Pattern.mqh>
+#include <AI\AI.mqh>
+
+// Define EA parameters
+input double lotSize = 0.01; // Lot size for each trade
+input int stopLoss = 100; // Stop loss in pips
+input int takeProfit = 200; // Take profit in pips
+
+// Define global variables
+CTrade trade;
+CPattern pattern;
+CAI ai;
+
+// Expert Advisor initialization function
+int OnInit()
+{
+   // Initialize trade module
+   trade.Init();
+
+   // Initialize pattern recognition module
+   pattern.Init();
+
+   // Initialize AI module
+   ai.Init();
+
+   return(INIT_SUCCEEDED);
+}
+
+// Expert Advisor start function
+void OnTick()
+{
+   // Check if there is a new price action pattern
+   if (pattern.HasNewPattern())
+   {
+      // Get the forecasted outcome from AI
+      int outcome = ai.ForecastOutcome(pattern.GetPattern());
+
+      // Check if the outcome is favorable for a trade
+      if (outcome == OUTCOME_BUY)
+      {
+         // Open a buy trade
+         trade.Buy(lotSize, Symbol(), 0, 0, stopLoss, takeProfit, 'AI for Gold');
+
+         // Print trade information to the journal
+         Print('Buy trade opened: lotSize=', DoubleToString(lotSize), ', symbol=', Symbol(),
+               ', stopLoss=', IntegerToString(stopLoss), ', takeProfit=', IntegerToString(takeProfit));
+      }
+      else if (outcome == OUTCOME_SELL)
+      {
+         // Open a sell trade
+         trade.Sell(lotSize, Symbol(), 0, 0, stopLoss, takeProfit, 'AI for Gold');
+
+         // Print trade information to the journal
+         Print('Sell trade opened: lotSize=', DoubleToString(lotSize), ', symbol=', Symbol(),
+               ', stopLoss=', IntegerToString(stopLoss), ', takeProfit=', IntegerToString(takeProfit));
+      }
+   }
+}
+
+// Expert Advisor deinitialization function
+void OnDeinit(const int reason)
+{
+   // Deinitialize trade module
+   trade.Deinit();
+
+   // Deinitialize pattern recognition module
+   pattern.Deinit();
+
+   // Deinitialize AI module
+   ai.Deinit();
+}
